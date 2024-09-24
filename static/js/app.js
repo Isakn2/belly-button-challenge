@@ -14,18 +14,15 @@ function buildMetadata(sample) {
     // Use `.html("") to clear any existing metadata
     panel.html("");
 
-    // Inside a loop, you will need to use d3 to append new
-    // tags for each key-value in the filtered metadata.
-    for (const [key, value] of Object.entries(info) ){ //The Object.entries() method converts an object into an array of its key-value pairs. scr: javascript.info
-      // Upercase 'key'
+    // Append new tags for each key-value in the filtered metadata
+    for (const [key, value] of Object.entries(info) ){
       let upperkey = key.toUpperCase();
-      // Append value-pairs to panel 
       panel.append("h6").text(`${upperkey}: ${value}`);
     }
   });
 }
 
-// function to build both charts
+// Function to build both charts
 function buildCharts(sample) {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
@@ -40,7 +37,7 @@ function buildCharts(sample) {
     let otu_labels = info.otu_labels;
     let sample_values = info.sample_values;
 
-    // Build a Bubble Chart
+    // Build a Bubble Chart (same as before)
     let bubble_trace = {
       x: otu_ids,
       y: sample_values,
@@ -51,10 +48,9 @@ function buildCharts(sample) {
         colorscale: "Portland"
       },
       text: otu_labels
-    }
+    };
     let bubble_traces = [bubble_trace];
 
-    // Render the Bubble Chart
     let bubble_layout = {
       title: "Bacteria Cultures Per Sample",
       xaxis: {title: "OTU ID"},
@@ -63,25 +59,23 @@ function buildCharts(sample) {
 
     Plotly.newPlot("bubble", bubble_traces, bubble_layout);
 
-    // For the Bar Chart, map the otu_ids to a list of strings for your yticks
-    let yticks = otu_ids.map(x => `OTU: ${x}`);
-    
-    // Build a Bar Chart
-    // Don't forget to slice and reverse the input data appropriately
+    // Map the otu_ids to a list of strings for your yticks
+    let yticks = otu_ids.slice(0, 10).map(x => `OTU ${x}`);
+
+    // Build a Bar Chart (preserving the original format)
     let trace_1 = {
-      x: sample_values.slice(0,10).reverse(),
-      y: yticks.slice(0,10).reverse(),
+      x: sample_values.slice(0, 10).reverse(),
+      y: yticks.reverse(),
       type: "bar",
       marker: {
         colorscale: 'Magma',
         color: sample_values.slice(0, 10).reverse()
       },
-      text: otu_labels.slice(0,10).reverse(),
+      text: otu_labels.slice(0, 10).reverse(),  // Full labels for hover text
       orientation: "h"
     };
     let traces = [trace_1];
 
-    // Render the Bar Chart
     let bar_layout = {
       title: "Top 10 Bacteria Cultures Found",
       xaxis: {title: "Number of Bacteria"}
@@ -102,8 +96,6 @@ function init() {
     let dropdown = d3.select("#selDataset");
 
     // Use the list of sample names to populate the select options
-    // Hint: Inside a loop, you will need to use d3 to append a new
-    // option for each sample name.
     for (let i = 0; i < names.length; i++) {
       let name = names[i];
       dropdown.append("option").text(name).property("value", name);
